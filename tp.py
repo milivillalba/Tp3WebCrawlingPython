@@ -2,11 +2,15 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
-def crawl_website(url):
-    # Lista para almacenar los datos recolectados
+
+# URL del sitio web
+url = 'https://doramasflix.co/'
+
+def Rastrear_pagina_web(url):
+    # Creo una lista vacia para almacenar tos los datos 
     datos = {}
 
-    # Realizar la solicitud GET a la URL
+    # Realizo una  solicitud GET a la URL 
     response = requests.get(url)
 
     # Verificar si la solicitud fue exitosa
@@ -15,16 +19,16 @@ def crawl_website(url):
         soup = BeautifulSoup(response.text, 'html.parser')
 
         # Encontrar todas las etiquetas <a> con sus enlaces
-        links = soup.find_all('a')
+        enlaces = soup.find_all('a')
 
         # Recorrer cada enlace encontrado
-        for link in links:
+        for link in enlaces:
             # Obtener la URL del enlace
             link_url = link.get('href')
 
-            # Verificar si la URL es válida
+            # Verifico si la URL es válida
             if link_url.startswith('http'):
-                # Realizar una nueva solicitud GET a la URL del enlace
+                # Realizar una nueva solicitud GET a la URL del enlace 
                 link_response = requests.get(link_url)
 
                 # Verificar si la solicitud fue exitosa
@@ -33,28 +37,26 @@ def crawl_website(url):
                     link_soup = BeautifulSoup(link_response.text, 'html.parser')
 
                     # Encontrar todas las etiquetas <h1> y <p> en el contenido del enlace
-                    h1_tags = link_soup.find_all('h1')
-                    p_tags = link_soup.find_all('p')
+                    etiqueta_h1 = link_soup.find_all('h1')
+                    etiqueta_p = link_soup.find_all('p')
 
                     # Almacenar los elementos encontrados en un diccionario
-                    link_data = {
-                        'h1': [h1.text.strip() for h1 in h1_tags],
-                        'p': [p.text.strip() for p in p_tags]
+                    link_almacenar_datos = {
+                        'h1': [h1.text.strip() for h1 in etiqueta_h1],
+                        'p': [p.text.strip() for p in etiqueta_p]
                     }
 
                     # Agregar los datos al diccionario principal usando la URL del enlace como clave
-                    data[link_url] = link_data
+                    datos[link_url] = link_almacenar_datos
 
-    return data
+    return datos
 
-# URL del sitio web
-url = 'https://doramasflix.co/'
 
 # Llamar a la función para rastrear el sitio web y obtener los datos
-result = crawl_website(url)
+result = Rastrear_pagina_web(url)
 
 # Guardar los datos en un archivo JSON
-with open('web_crawler_data.json', 'w') as json_file:
+with open('Información_extraída.json', 'w') as json_file:
     json.dump(result, json_file, indent=4)
 
-print("Los datos se han almacenado correctamente en 'web_crawler_data.json'")
+print("Los datos se han almacenado correctamente en 'Información_extraída.json'")
